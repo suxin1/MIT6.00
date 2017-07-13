@@ -1,4 +1,7 @@
 import pylab
+import os
+
+cwd = os.getcwd()  # Get the current directory
 
 """
 Curve Fitting
@@ -88,8 +91,8 @@ def processTrajectories(fName):
                + ', Speed = ' + str(round(speed, 2)) + 'feet/sec')
     pylab.legend()
 
-##processTrajectories('launcherData.txt')
-##pylab.show()
+processTrajectories('launcherData.txt')
+pylab.show()
 
 
 """
