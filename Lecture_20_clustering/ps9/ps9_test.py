@@ -8,7 +8,7 @@ def test_loadSubjects():
     failed = False
     try:
         actual = ps9.loadSubjects("shortened_subjects.txt")
-    except Exception,e:
+    except Exception(e):
         failed = True
         print("ERROR in loadSubjects: Error while loading subjects:", e.value)
     try:
@@ -169,8 +169,8 @@ def test_greedyAdvisor():
 
     failed = False
     print
-    print "subjects = " + str(subjects)
-    print "Trying greedyAdvisor(subjects, 17, cmpSum)..."
+    print ("subjects = " + str(subjects))
+    print ("Trying greedyAdvisor(subjects, 17, cmpSum)...")
     try:
         actual = ps9.greedyAdvisor(subjects, 17, cmpSum)
     except Exception,e:
