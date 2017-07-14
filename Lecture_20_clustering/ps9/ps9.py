@@ -232,4 +232,4 @@ def int2bin(num):
         num = num // 2
     return bin
 shortenedSubjects = {'12.02': (5, 5), '12.03': (2, 1), '12.04': (7, 1), '12.07': (6, 3), '12.06': (2, 5), '12.08': (2, 4), '12.09': (8, 2), '12.15': (10, 7)}
-bruteForceAdvisor(shortenedSubjects, 7)
+print bruteForceAdvisor(loadSubjects("shortened_subjects.txt"), 7)
