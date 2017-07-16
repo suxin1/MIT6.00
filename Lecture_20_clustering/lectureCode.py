@@ -39,6 +39,9 @@ class Point(object):
 
 
 class Cluster(object):
+    """
+    A single cluster
+    """
     def __init__(self, points, pointType):
         self.points = points
         self.pointType = pointType
@@ -271,6 +274,7 @@ def kmeans(points, k, cutoff, pointType, maxIters=100,
     for p in initialCentroids:
         clusters.append(Cluster([p], pointType))
     numIters = 0
+
     biggestChange = cutoff
     while biggestChange >= cutoff and numIters < maxIters:
         # Create a list containing k empty lists
