@@ -37,10 +37,11 @@ def loadSubjects(filename):
     with open(filename) as file:
         for line in file:
             items = line.split(',')
-
-            # Remove the \r\n from the last string item
-            items[2] = items[2].split('\r')[0]
-            tempDic[items[0]] = (int(items[1]), int(items[2]))
+            if len(items) > 2:
+                # Remove the \r\n from the last string item
+                print items
+                items[2] = items[2].split('\r')[0]
+                tempDic[items[0]] = (int(items[1]), int(items[2]))
 
     return tempDic
 
@@ -209,6 +210,7 @@ def generateBin(num):
     :param num: int
     :return: list of list
     """
+    assert type(num) is int
     result = []
     for i in range(2**num):
         bin = int2bin(i)
@@ -225,11 +227,13 @@ def int2bin(num):
     :param num: int
     :return: list e.g [1,0,1,0]
     """
+
     bin = []
     while num > 0:
         bit = num % 2
         bin.insert(0, bit)
         num = num // 2
     return bin
+
 shortenedSubjects = {'12.02': (5, 5), '12.03': (2, 1), '12.04': (7, 1), '12.07': (6, 3), '12.06': (2, 5), '12.08': (2, 4), '12.09': (8, 2), '12.15': (10, 7)}
 print bruteForceAdvisor(loadSubjects("shortened_subjects.txt"), 7)
