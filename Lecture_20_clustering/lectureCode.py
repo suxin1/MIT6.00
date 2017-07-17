@@ -469,21 +469,21 @@ def test(k=50, cutoff=0.01, numTrials=1, myHome='MAMiddlesex',
             print 'Ave. income =', round(getAveIncome(c), 0)
 
 
-# test(k = 5, filterName = 'all', printClusters = False)
-# pylab.title('All Features')
-# pylab.figure()
-# test(k = 5, filterName = 'wealthOnly', printClusters = False)
-# pylab.title('Home Value, Income, Unemployed')
-# pylab.figure()
-# test(k = 50, filterName = 'education', numTrials = 5, printClusters = False)
-# pylab.title('Education Level')
-# pylab.show()
-# test(k = 50, filterName = 'all', numTrials = 2, printClusters = False)
-# pylab.title('All Features')
-# pylab.figure()
-# test(k = 50, filterName = 'noEducation', numTrials = 2, printClusters = False)
-# pylab.title('All - Education')
-# pylab.show()
+test(k = 5, filterName = 'all', printClusters = False)
+pylab.title('All Features')
+pylab.figure()
+test(k = 5, filterName = 'wealthOnly', printClusters = False)
+pylab.title('Home Value, Income, Unemployed')
+pylab.figure()
+test(k = 50, filterName = 'education', numTrials = 5, printClusters = False)
+pylab.title('Education Level')
+pylab.show()
+test(k = 50, filterName = 'all', numTrials = 2, printClusters = False)
+pylab.title('All Features')
+pylab.figure()
+test(k = 50, filterName = 'noEducation', numTrials = 2, printClusters = False)
+pylab.title('All - Education')
+pylab.show()
 
 def test1(k=2, cutoff=0.0001, numTrials=1, printSteps=False,
           printHistory=False):
@@ -541,4 +541,4 @@ def test3(fileName, scale=False, filterName='all',
         print '  C' + str(index) + ':', c
         index += 1
 
-test3('newEngland.txt', scale='True')
+# test3('newEngland.txt', scale='True')
