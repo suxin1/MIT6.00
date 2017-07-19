@@ -115,14 +115,14 @@ class ResistantVirus(SimpleVirus):
 
         if random.random() < birthProb:
 
-            childResistant = {}
+            childResistances = {}
             for drug in self.resistances:
                 if random.random() < self.mutProb:
-                    childResistant[drug] = not self.resistances[drug]
+                    childResistances[drug] = not self.resistances[drug]
                 else:
-                    childResistant[drug] = self.resistances[drug]
+                    childResistances[drug] = self.resistances[drug]
 
-            return ResistantVirus(self.maxBirthProb, self.clearProb, childResistant, self.mutProb )
+            return ResistantVirus(self.maxBirthProb, self.clearProb, childResistances, self.mutProb )
 
         else:
             raise NoChildException
@@ -147,8 +147,8 @@ class Patient(SimplePatient):
         
         maxPop: the  maximum virus population for this patient (an integer)
         """
-        # TODO
-    
+        SimplePatient.__init__(self, viruses, maxPop)
+        self.drugs = []
 
     def addPrescription(self, newDrug):
 
@@ -161,9 +161,9 @@ class Patient(SimplePatient):
 
         postcondition: list of drugs being administered to a patient is updated
         """
-        # TODO
-        # should not allow one drug being added to the list multiple times
-
+        # should not allow one drug being added to the list multiple time
+        if newDrug not in self.drugs:
+            self.drugs.append(newDrug)
 
     def getPrescriptions(self):
 
@@ -173,7 +173,7 @@ class Patient(SimplePatient):
         patient.
         """
 
-        # TODO
+        return self.drugs
         
 
     def getResistPop(self, drugResist):
