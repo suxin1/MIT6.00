@@ -42,7 +42,8 @@ class SimpleVirus(object):
         clearProb: Maximum clearance probability (a float between 0-1).
         """
 
-        # TODO
+        self.maxBirthProb = maxBirthProb
+        self.clearProb = clearProb
 
     def doesClear(self):
         """ Stochastically determines whether this virus particle is cleared from the
@@ -51,7 +52,7 @@ class SimpleVirus(object):
         False.
         """
 
-        # TODO
+        return random.random() < self.clearProb
 
     def reproduce(self, popDensity):
         """
@@ -73,7 +74,12 @@ class SimpleVirus(object):
         NoChildException if this virus particle does not reproduce.
         """
 
-        # TODO
+        birthProb = self.maxBirthProb * (1 - popDensity)
+
+        if random.random() < birthProb:
+            return SimpleVirus(self.maxBirthProb, self.clearProb)
+        else:
+            raise NoChildException
 
 
 class SimplePatient(object):
@@ -94,7 +100,8 @@ class SimplePatient(object):
         maxPop: the  maximum virus population for this patient (an integer)
         """
 
-        # TODO
+        self.viruses = viruses
+        self.maxPop = maxPop
 
     def getTotalPop(self):
         """
@@ -102,7 +109,7 @@ class SimplePatient(object):
         returns: The total virus population (an integer)
         """
 
-        # TODO
+        return len(self.viruses)
 
     def update(self):
         """
@@ -119,14 +126,35 @@ class SimplePatient(object):
         returns: The total virus population at the end of the update (an
         integer)
         """
+        survivedViruses = []
 
-        # TODO
+        for virus in self.viruses:
+            if not virus.doesClear():
+                survivedViruses.append(virus)
+
+        popDensity = float(len(self.viruses)/self.maxPop)
+
+        children = []
+        for virus in survivedViruses:
+            children.append(virus)
+
+        for virus in survivedViruses:
+            try:
+                child = virus.reproduce(popDensity)
+                children.append(child)
+            except NoChildException:
+                continue
+
+        self.viruses = children
+
+        return self.getTotalPop()
+
 
 
 #
 # PROBLEM 2
 #
-def simulationWithoutDrug():
+def simulationWithoutDrug(initVirusNum=100, maxPop=1000, maxBirthProb=0.1, clearProb=0.05):
     """
     Run the simulation and plot the graph for problem 2 (no drugs are used,
     viruses do not have any drug resistance).
@@ -134,4 +162,25 @@ def simulationWithoutDrug():
     total virus population as a function of time.
     """
 
-    # TODO
+    # Generate a list of viruses
+    viruses = [SimpleVirus(maxBirthProb, clearProb) for i in range(initVirusNum)]
+
+    # Instantiate a simple patient
+    patient = SimplePatient(viruses, maxPop)
+
+    numOVirus = []
+    timeStep = []
+
+    for i in range(300):
+        timeStep.append(i)
+        numOVirus.append(patient.update())
+
+    pylab.figure(1)
+    pylab.ylabel("number of viruses per tiem step")
+    pylab.xlabel("time step")
+    pylab.plot(numOVirus, 'r-', label="Simple virus population over time")
+    pylab.show()
+
+simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.05)
+simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.06)
+simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.07)
