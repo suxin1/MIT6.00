@@ -240,16 +240,23 @@ class Patient(SimplePatient):
 # PROBLEM 2
 #
 
+# ------------------------------------------------------
+# A general simulate function for later problem
+# ------------------------------------------------------
 
-def simulationWithDrug(resistances, drugs, mutProb=0.005, maxBirthProb=0.1, clearProb=0.05):
+
+def simulationWithDrug(resistances, drugs, mutProb=0.005, maxBirthProb=0.1, clearProb=0.05, uniStep=True):
     """
     Runs simulations and plots graphs for problem 4.
     Instantiates a patient, runs a simulation for 150 timesteps, adds
     guttagonol, and runs the simulation for an additional 150 timesteps.
     total virus population vs. time and guttagonol-resistant virus population
     vs. time are plotted
+    :param resistances A dictionary of key and value pair of drug name and resistant status
+    :param drugs A dictionary of key and value pair of delay steps and drug name.
+    :return (resistantPops, totalPops)
     """
-
+    # Initialization
     viruses = [ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) for i in range(100)]
     patient = Patient(viruses, 1000)
 
@@ -263,7 +270,7 @@ def simulationWithDrug(resistances, drugs, mutProb=0.005, maxBirthProb=0.1, clea
     try:
         delay = max(drugs)
     except:
-        delay = 300
+        delay = 0
 
     for i in range(delay + 150):
         if i in drugs.keys():
@@ -272,21 +279,39 @@ def simulationWithDrug(resistances, drugs, mutProb=0.005, maxBirthProb=0.1, clea
         addToRsist(patient.getResistPop(["guttagonol"]))
         addTototal(currentPop)
 
-    # pylab.figure(1)
-    # line1, = pylab.plot(resistantPops, 'r-', label="resistant population")
-    # line2, =pylab.plot(totalPops, 'g--', label="total population")
-    # pylab.xlabel("time steps")
-    # pylab.ylabel("population")
-
-    # line1legend = pylab.legend(handles=[line1], loc=1)
-    # pylab.gca().add_artist(line1legend)
-    # line2legend = pylab.legend(handles=[line2], loc=2)
-    # pylab.show()
-
     return (resistantPops, totalPops)
 
-# simulationWithDrug({"guttagonol": False}, {150: "guttagonol"})
 
+# ------------------------------------------------------
+# Figure 1: drug treatment population plot
+# ------------------------------------------------------
+
+
+def singleDrugSimuPlot():
+    resistantPops, totalPops = simulationWithDrug({"guttagonol": False}, {150: "guttagonol"})
+
+    pylab.figure(1)
+    line1, = pylab.plot(resistantPops, 'r-', label="resistant population")
+    line2, =pylab.plot(totalPops, 'g--', label="total population")
+    pylab.xlabel("time steps")
+    pylab.ylabel("population")
+
+    pylab.show()
+
+
+def multiDrugSimuPlot():
+    resistantPops, totalPops = simulationWithDrug({"guttagonol": False, "grimpex": False}, {150: "guttagonol", 220: "grimpex"})
+
+    pylab.figure(2)
+    pylab.plot(resistantPops, 'r-', label="resistant population")
+    pylab.plot(totalPops, 'g--', label="total population")
+    pylab.xlabel("time steps")
+    pylab.ylabel("population")
+
+    pylab.show()
+
+
+# multiDrugSimuPlot()
 
 #
 # PROBLEM 3
@@ -334,7 +359,7 @@ def makeHist(data, title, xlabel, ylabel, xrange=None):
 
     return pylab.xlim()
 
-# simulationDelayedTreatment()
+
 #
 # PROBLEM 4
 #
@@ -351,37 +376,8 @@ def simulationTwoDrugsDelayedTreatment(resistances, drugs, mutProb=0.005, maxBir
     timesteps of simulation).
     """
 
-    viruses = [ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) for i in range(100)]
-    patient = Patient(viruses, 1000)
 
-    resistantPops = []
-    totalPops = []
-
-    # For performance concern
-    addToRsist = resistantPops.append
-    addTototal = totalPops.append
-
-
-    for i in range(300 + 150):
-        if i in drugs.keys():
-            patient.addPrescription(drugs[i])
-        currentPop = patient.update()
-        addToRsist(patient.getResistPop(["guttagonol"]))
-        addTototal(currentPop)
-
-    pylab.figure(1)
-
-    line1, = pylab.plot(resistantPops, 'r-', label="resistant population")
-    line2, =pylab.plot(totalPops, 'g--', label="total population")
-    pylab.xlabel("time steps")
-    pylab.ylabel("population")
-
-    line1legend = pylab.legend(handles=[line1], loc=1)
-    pylab.gca().add_artist(line1legend)
-    line2legend = pylab.legend(handles=[line2], loc=2)
-    pylab.show()
-
-simulationTwoDrugsDelayedTreatment({"guttagonol": False, "grimpex": False}, {150: "guttagonol", 200: "grimpex"})
+# simulationTwoDrugsDelayedTreatment({"guttagonol": False, "grimpex": False}, {150: "guttagonol", 220: "grimpex"})
 
 
 #
