@@ -91,7 +91,7 @@ def processTrajectories(fName):
                + ', Speed = ' + str(round(speed, 2)) + 'feet/sec')
     pylab.legend()
 
-processTrajectories('launcherData.txt')
+processTrajectories('springData.txt')
 pylab.show()
 
 

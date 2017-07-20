@@ -132,7 +132,7 @@ class SimplePatient(object):
             if not virus.doesClear():
                 survivedViruses.append(virus)
 
-        popDensity = float(len(self.viruses)/self.maxPop)
+        popDensity = float(len(survivedViruses)/self.maxPop)
 
         children = []
         for virus in survivedViruses:
@@ -181,6 +181,11 @@ def simulationWithoutDrug(initVirusNum=100, maxPop=1000, maxBirthProb=0.1, clear
     pylab.plot(numOVirus, 'r-', label="Simple virus population over time")
     pylab.show()
 
-simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.05)
-simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.06)
-simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.07)
+
+def main():
+    simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.05)
+    simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.06)
+    simulationWithoutDrug(clearProb=0.05, maxBirthProb=0.07)
+
+if __name__ == "__main__":
+    main()

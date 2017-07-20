@@ -43,6 +43,11 @@ class ResistantVirus(SimpleVirus):
         self.resistances = resistances
         self.mutProb = mutProb
 
+    def isResistantToAll(self, drugs):
+        for drug in drugs:
+            if not self.isResistantTo(drug):
+                return False
+        return True
 
     def isResistantTo(self, drug):
 
@@ -60,7 +65,6 @@ class ResistantVirus(SimpleVirus):
             return False
 
         return self.resistances[drug]
-
 
 
     def reproduce(self, popDensity, activeDrugs):
@@ -121,13 +125,11 @@ class ResistantVirus(SimpleVirus):
                     childResistances[drug] = not self.resistances[drug]
                 else:
                     childResistances[drug] = self.resistances[drug]
-
-            return ResistantVirus(self.maxBirthProb, self.clearProb, childResistances, self.mutProb )
+            return ResistantVirus(self.maxBirthProb, self.clearProb, childResistances, self.mutProb)
 
         else:
             raise NoChildException
 
-            
 
 class Patient(SimplePatient):
 
@@ -172,14 +174,12 @@ class Patient(SimplePatient):
         returns: The list of drug names (strings) being administered to this
         patient.
         """
-
         return self.drugs
-        
 
     def getResistPop(self, drugResist):
         """
         Get the population of virus particles resistant to the drugs listed in 
-        drugResist.        
+        drugResist.
 
         drugResist: Which drug resistances to include in the population (a list
         of strings - e.g. ['guttagonol'] or ['guttagonol', 'grimpex'])
@@ -187,9 +187,12 @@ class Patient(SimplePatient):
         returns: the population of viruses (an integer) with resistances to all
         drugs in the drugResist list.
         """
-        # TODO
-                   
+        resistPop = 0
+        for virus in self.viruses:
+            if virus.isResistantToAll(drugResist):
+                resistPop += 1
 
+        return resistPop
 
     def update(self):
 
@@ -209,51 +212,135 @@ class Patient(SimplePatient):
         returns: the total virus population at the end of the update (an
         integer)
         """
-        # TODO
+        survivedViruses = []
+        append = survivedViruses.append
 
+        for virus in self.viruses:
+            if not virus.doesClear():
+                append(virus)
 
+        popDensity = float(len(survivedViruses))/self.maxPop
+
+        childrenViruses = []
+        append = childrenViruses.append
+        for virus in survivedViruses:
+            append(virus)
+
+        for virus in survivedViruses:
+            try:
+                child = virus.reproduce(popDensity, self.drugs)
+                append(child)
+            except NoChildException:
+                continue
+
+        self.viruses = childrenViruses
+        return len(childrenViruses)
 
 #
 # PROBLEM 2
 #
 
-def simulationWithDrug():
 
+def simulationWithDrug(resistances, drugs, mutProb=0.005, maxBirthProb=0.1, clearProb=0.05):
     """
-
     Runs simulations and plots graphs for problem 4.
     Instantiates a patient, runs a simulation for 150 timesteps, adds
     guttagonol, and runs the simulation for an additional 150 timesteps.
     total virus population vs. time and guttagonol-resistant virus population
     vs. time are plotted
     """
-    # TODO
 
+    viruses = [ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) for i in range(100)]
+    patient = Patient(viruses, 1000)
+
+    resistantPops = []
+    totalPops = []
+
+    # For performance concern
+    addToRsist = resistantPops.append
+    addTototal = totalPops.append
+
+    try:
+        delay = max(drugs)
+    except:
+        delay = 300
+
+    for i in range(delay + 150):
+        if i in drugs.keys():
+            patient.addPrescription(drugs[i])
+        currentPop = patient.update()
+        addToRsist(patient.getResistPop(["guttagonol"]))
+        addTototal(currentPop)
+
+    # pylab.figure(1)
+    # line1, = pylab.plot(resistantPops, 'r-', label="resistant population")
+    # line2, =pylab.plot(totalPops, 'g--', label="total population")
+    # pylab.xlabel("time steps")
+    # pylab.ylabel("population")
+
+    # line1legend = pylab.legend(handles=[line1], loc=1)
+    # pylab.gca().add_artist(line1legend)
+    # line2legend = pylab.legend(handles=[line2], loc=2)
+    # pylab.show()
+
+    return (resistantPops, totalPops)
+
+# simulationWithDrug({"guttagonol": False}, {150: "guttagonol"})
 
 
 #
 # PROBLEM 3
-#        
+#
 
 def simulationDelayedTreatment():
-
     """
     Runs simulations and make histograms for problem 5.
     Runs multiple simulations to show the relationship between delayed treatment
     and patient outcome.
     Histograms of final total virus populations are displayed for delays of 300,
     150, 75, 0 timesteps (followed by an additional 150 timesteps of
-    simulation).    
+    simulation).
     """
+    finalData = []
+    steps = [0, 75, 150, 300]
+    for step in steps:
+        data = []
+        for i in range(30):
+            result = simulationWithDrug({"guttagonol": False}, {step: "guttagonol"})
+            data.append(result[1][len(result[1])-1])
 
-    # TODO
+        finalData.append(data)
 
+    pylab.figure(1)
+    pylab.title("The Effect of Delaying Treatment")
+    xRange = None
+    for i in range(4):
+        subplot = "22" + str(i+1)
+
+        pylab.subplot(int(subplot))
+        xRange = makeHist(finalData[i], "Delay " + str(steps[i]) + "steps", "final total viruses", "number", (0, 550))
+
+    pylab.show()
+
+
+def makeHist(data, title, xlabel, ylabel, xrange=None):
+    print data
+    pylab.xlabel(xlabel)
+    pylab.ylabel(ylabel)
+    if xrange:
+        pylab.xlim(xrange[0], xrange[1])
+    pylab.title(title)
+    pylab.hist(data, 20, facecolor="g")
+
+    return pylab.xlim()
+
+# simulationDelayedTreatment()
 #
 # PROBLEM 4
 #
 
-def simulationTwoDrugsDelayedTreatment():
 
+def simulationTwoDrugsDelayedTreatment(resistances, drugs, mutProb=0.005, maxBirthProb=0.1, clearProb=0.05):
     """
     Runs simulations and make histograms for problem 6.
     Runs multiple simulations to show the relationship between administration
@@ -264,24 +351,51 @@ def simulationTwoDrugsDelayedTreatment():
     timesteps of simulation).
     """
 
-    # TODO
+    viruses = [ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) for i in range(100)]
+    patient = Patient(viruses, 1000)
 
+    resistantPops = []
+    totalPops = []
+
+    # For performance concern
+    addToRsist = resistantPops.append
+    addTototal = totalPops.append
+
+
+    for i in range(300 + 150):
+        if i in drugs.keys():
+            patient.addPrescription(drugs[i])
+        currentPop = patient.update()
+        addToRsist(patient.getResistPop(["guttagonol"]))
+        addTototal(currentPop)
+
+    pylab.figure(1)
+
+    line1, = pylab.plot(resistantPops, 'r-', label="resistant population")
+    line2, =pylab.plot(totalPops, 'g--', label="total population")
+    pylab.xlabel("time steps")
+    pylab.ylabel("population")
+
+    line1legend = pylab.legend(handles=[line1], loc=1)
+    pylab.gca().add_artist(line1legend)
+    line2legend = pylab.legend(handles=[line2], loc=2)
+    pylab.show()
+
+simulationTwoDrugsDelayedTreatment({"guttagonol": False, "grimpex": False}, {150: "guttagonol", 200: "grimpex"})
 
 
 #
 # PROBLEM 5
-#    
+#
 
 def simulationTwoDrugsVirusPopulations():
 
     """
-
     Run simulations and plot graphs examining the relationship between
     administration of multiple drugs and patient outcome.
     Plots of total and drug-resistant viruses vs. time are made for a
     simulation with a 300 time step delay between administering the 2 drugs and
-    a simulations for which drugs are administered simultaneously.        
-
+    a simulations for which drugs are administered simultaneously.
     """
     #TODO
 
