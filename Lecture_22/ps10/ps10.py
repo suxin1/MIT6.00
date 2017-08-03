@@ -91,12 +91,15 @@ def kmeans(points, k, cutoff, pointType, minIters = 3, maxIters = 100, toPrint =
         clusters.append(Cluster([p], pointType))
     numIters = 0
     biggestChange = cutoff
+
+    # Do it enough times to find a good cluster
     while (biggestChange >= cutoff and numIters < maxIters) or numIters < minIters:
         print "Starting iteration " + str(numIters)
-        newClusters = []
+        newClusters = []  # A list of list of points
         for c in clusters:
             newClusters.append([])
-        for p in points:
+
+        for p in points:  # Assign each point to it's nearest cluster
             smallestDistance = p.distance(clusters[0].getCentroid())
             index = 0
             for i in range(len(clusters)):
@@ -106,6 +109,8 @@ def kmeans(points, k, cutoff, pointType, minIters = 3, maxIters = 100, toPrint =
                     index = i
             newClusters[index].append(p)
         biggestChange = 0.0
+
+        # Update clusters which means find it's centroid and return the change of the centroid.
         for i in range(len(clusters)):
             change = clusters[i].update(newClusters[i])
             #print "Cluster " + str(i) + ": " + str(len(clusters[i].points))
@@ -113,7 +118,8 @@ def kmeans(points, k, cutoff, pointType, minIters = 3, maxIters = 100, toPrint =
         numIters += 1
         if toPrint:
             print 'Iteration count =', numIters
-    maxDist = 0.0
+
+    maxDist = 0.0   # The biggest distance among all the points to centroid of it's own cluster.
     for c in clusters:
         for p in c.getPoints():
             if p.distance(c.getCentroid()) > maxDist:
@@ -121,6 +127,7 @@ def kmeans(points, k, cutoff, pointType, minIters = 3, maxIters = 100, toPrint =
     print 'Total Number of iterations =', numIters, 'Max Diameter =', maxDist
     print biggestChange
     return clusters, maxDist
+
 
 #US Counties example
 def readCountyData(fName, numEntries = 14):

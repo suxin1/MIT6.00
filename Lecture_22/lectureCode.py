@@ -90,8 +90,8 @@ def test1(kind):
     print g
 
 
-##test1(Digraph)
-##test1(Graph)
+#test1(Digraph)
+#test1(Graph)
 
 def shortestPath(graph, start, end, toPrint=False, visited=[]):
     global numCalls
@@ -142,7 +142,7 @@ def test2(kind, toPrint=False):
     print shortest
 
 
-##test2(Graph)
+# test2(Graph)
 # test2(Digraph)
 
 def bigTest1(kind, numNodes=25, numEdges=200):
@@ -160,7 +160,7 @@ def bigTest1(kind, numNodes=25, numEdges=200):
     print shortestPath(g, nodes[0], nodes[4])
 
 
-##bigTest1(Digraph)
+# bigTest1(Digraph)
 
 ##test2(Graph, toPrint = True)
 
@@ -219,7 +219,7 @@ def test3(kind):
     print shortest
 
 
-##test3(Digraph)
+# test3(Digraph)
 
 def bigTest2(kind, numNodes=25, numEdges=200):
     global numCalls
