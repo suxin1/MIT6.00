@@ -156,6 +156,7 @@ def readCountyData(fName, numEntries = 14):
         dataList.append(features)
         nameList.append(name)
     return nameList, dataList, maxVals
+
     
 def buildCountyPoints(fName):
     """
@@ -166,7 +167,7 @@ def buildCountyPoints(fName):
     points = []
     for i in range(len(nameList)):
         originalAttrs = pylab.array(featureList[i])
-        normalizedAttrs = originalAttrs/pylab.array(maxVals)
+        normalizedAttrs = originalAttrs/pylab.array(maxVals)  # Normalized feature's value is between 0 and 1
         points.append(County(nameList[i], originalAttrs, normalizedAttrs))
     return points
 
@@ -230,7 +231,7 @@ def test(points, k = 200, cutoff = 0.1):
 points = buildCountyPoints('counties.txt')
 random.seed(123)
 testPoints = random.sample(points, len(points)/10)
-test(testPoints)
+# test(testPoints)
 
 
     
@@ -243,6 +244,42 @@ def graphRemovedErr(points, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
     """
 
     # Your Code Here
+    l1, l2 = randomPartition(points, 0.8)
+    trainingSetE = []
+    holdoutSetE = []
+
+    for k in kvals:
+        clusters, maxDis = kmeans(l1, k, cutoff, County)
+        errorT = 0
+        errorHlist = []
+
+        for c in clusters:
+            for p in c.getPoints():
+                dis = p.distance(c.getCentroid())
+                errorT += dis ** 2
+
+        # For each point in l2 list find its distance to its nearest cluster
+        for p in l2:
+            smallestDis = p.distance(clusters[0].getCentroid())
+
+            for c in clusters:
+                currentDis = p.distance(c.getCentroid())
+                if currentDis < smallestDis:
+                    smallestDis = currentDis
+
+            errorHlist.append(smallestDis ** 2)
+
+        holdoutSetE.append(sum(errorHlist))
+        trainingSetE.append(errorT)
+
+    pylab.plot(kvals, holdoutSetE)
+    pylab.plot(kvals, trainingSetE)
+    pylab.show()
+
+
+graphRemovedErr(testPoints)
+
+
 
 
 def graphPredictionErr(points, dimension, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):

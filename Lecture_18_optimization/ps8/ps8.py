@@ -23,7 +23,6 @@ class ResistantVirus(SimpleVirus):
     def __init__(self, maxBirthProb, clearProb, resistances, mutProb):
 
         """
-
         Initialize a ResistantVirus instance, saves all parameters as attributes
         of the instance.
 
@@ -36,9 +35,9 @@ class ResistantVirus(SimpleVirus):
         particle is resistant to neither guttagonol nor grimpex.
 
         mutProb: Mutation probability for this virus particle (a float). This is
-        the probability of the offspring acquiring or losing resistance to a drug.        
-
+        the probability of the offspring acquiring or losing resistance to a drug.
         """
+
         SimpleVirus.__init__(self, maxBirthProb, clearProb)
         self.resistances = resistances
         self.mutProb = mutProb
