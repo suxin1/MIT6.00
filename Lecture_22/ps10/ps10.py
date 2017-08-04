@@ -229,8 +229,8 @@ def test(points, k = 200, cutoff = 0.1):
 
         
 points = buildCountyPoints('counties.txt')
-random.seed(123)
-testPoints = random.sample(points, len(points)/10)
+# random.seed(123)
+testPoints = random.sample(points, len(points))
 # test(testPoints)
 
 
@@ -250,9 +250,11 @@ def graphRemovedErr(points, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
 
     for k in kvals:
         clusters, maxDis = kmeans(l1, k, cutoff, County)
+
         errorT = 0
         errorHlist = []
 
+        # Total Error for each k where TE = Sum(distance of point to the centroid of its encapsulating cluster)
         for c in clusters:
             for p in c.getPoints():
                 dis = p.distance(c.getCentroid())
@@ -260,8 +262,8 @@ def graphRemovedErr(points, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
 
         # For each point in l2 list find its distance to its nearest cluster
         for p in l2:
+            # Find the smallest square distance from point to all the clusters
             smallestDis = p.distance(clusters[0].getCentroid())
-
             for c in clusters:
                 currentDis = p.distance(c.getCentroid())
                 if currentDis < smallestDis:
@@ -272,14 +274,48 @@ def graphRemovedErr(points, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
         holdoutSetE.append(sum(errorHlist))
         trainingSetE.append(errorT)
 
-    pylab.plot(kvals, holdoutSetE)
-    pylab.plot(kvals, trainingSetE)
+    hrRatio = [holdoutSetE[i]/trainingSetE[i] for i in range(len(kvals))]
+
+    pylab.figure(1)
+    pylab.plot(kvals, holdoutSetE, '--r', label="hold out set error")
+    pylab.plot(kvals, trainingSetE, '-g', label="training set error")
+    pylab.xlabel("K (Number of clusters)")
+    pylab.ylabel("Error")
+    pylab.legend()
+
+    pylab.figure(2)
+    pylab.plot(kvals, hrRatio, '--r')
+    pylab.xlabel("K (Number of clusters)")
+    pylab.ylabel("HR ratio")
     pylab.show()
 
 
 graphRemovedErr(testPoints)
 
+def observeOneCounty(points):
+    county = "MNLake"
+    print ("Observe county MN Lake")
 
+    # Create file
+    file = open("result", "w")
+    file.write("Clusters which includes " + county + " in 10 time clustering\n")
+    for i in range(10):
+        clusters, maxDis = kmeans(points, 50, 0.1, County)
+        for i in range(len(clusters)):
+            c = clusters[i]
+
+            isFound = False
+
+            for p in c.getPoints():
+                if p.getName() == county:
+                    file.write("-----------cluster-----------\n" + c.toStr())
+                    isFound = True
+                    break
+            if isFound:
+                break
+    file.close()
+
+observeOneCounty(testPoints)
 
 
 def graphPredictionErr(points, dimension, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
