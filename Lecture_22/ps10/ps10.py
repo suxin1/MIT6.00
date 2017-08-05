@@ -62,6 +62,10 @@ class Cluster(object):
             return oldCentroid.distance(self.centroid)
         else:
             return 0.0
+    def getNameSet(self):
+        nameset = [p.getName() for p in self.points]
+        return nameset
+
     def getPoints(self):
         return self.points
     def contains(self, name):
@@ -290,7 +294,7 @@ def graphRemovedErr(points, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
     pylab.show()
 
 
-graphRemovedErr(testPoints)
+# graphRemovedErr(testPoints)
 
 def observeOneCounty(points):
     county = "MNLake"
@@ -308,7 +312,7 @@ def observeOneCounty(points):
 
             for p in c.getPoints():
                 if p.getName() == county:
-                    file.write("-----------cluster-----------\n" + c.toStr())
+                    file.write("-----------clusters-----------\n" + str(c.getNameSet()))
                     isFound = True
                     break
             if isFound:
