@@ -5,7 +5,7 @@
 
 #Code shared across examples
 import pylab, random, string, copy, math
-
+from functools import wraps
 
 class Point(object):
     def __init__(self, name, originalAttrs, normalizedAttrs = None):
@@ -41,10 +41,10 @@ class Point(object):
 class County(Point):
     weights = pylab.array([1.0] * 14)
 
-    def __init__(self, name, originalAttrs, normalizedAttrs, weights):
+    def __init__(self, name, originalAttrs, normalizedAttrs, weights=[]):
         Point.__init__(self, name, originalAttrs, normalizedAttrs)
 
-        if weights != None:
+        if any(weights):
             County.weights = weights
 
     # Override Point.distance to use County.weights to decide the
@@ -70,7 +70,7 @@ class Cluster(object):
             totVals += p.getAttrs()
         meanPoint = self.pointType('mean',
                                    totVals/float(len(self.points)),
-                                   totVals/float(len(self.points)), None)
+                                   totVals/float(len(self.points)), [])
         return meanPoint
 
     def update(self, points):
@@ -390,8 +390,14 @@ def analyzeCluster(clusterset):
 # --------------------------------------------------------
 #                          Problem 3
 # --------------------------------------------------------
+def record(func):
+    @wraps(func)
+    def wraper(*args, **kwargs):
+        pass
+    return wraper
 
-def graphPredictionErr(points, dimension, kvals = [25, 50, 75, 100, 125, 150], cutoff = 0.1):
+
+def graphPredictionErr(points, dimension, kvals=[25, 50, 75, 100, 125, 150], cutoff=0.1):
     """
     Given input points and a dimension to predict, should cluster on the
     appropriate values of k and graph the error in the resulting predictions,
@@ -438,21 +444,41 @@ def graphPredictionErr(points, dimension, kvals = [25, 50, 75, 100, 125, 150], c
 
         averageDiff.append(sum([sd for sd in squaredDiff]) / len(squaredDiff))
 
-
-
-    # pylab.figure(1)
-    # pylab.plot(kvals, averageDiff, '-g', label="poverty mean difference")
-    # pylab.xlabel("K (Number of clusters)")
-    # pylab.ylabel("poverty mean difference")
-    # pylab.show()
+    pylab.figure(1)
+    pylab.plot(kvals, averageDiff, '-g', label="poverty mean difference")
+    pylab.xlabel("K (Number of clusters)")
+    pylab.ylabel("poverty mean difference")
+    pylab.show()
 
     return averageDiff
 
 
+
+propertyDic = {
+    "HomeValue2000": 0,
+    "Income1999": 0,
+    "Poverty1999": 0,
+    "PopDensity2000": 1,
+    "PopChange": 0,
+    "Prcnt65+": 1,
+    "Below18": 1,
+    "PrcntFemale2000": 0,
+    "PrcntHSgrads2000": 0,
+    "PrcntCollege2000": 0,
+    "Unemployed": 1,
+    "PrcntBelow18": 1,
+    "LifeExpectancy": 0,
+    "FarmAcres": 1
+}
+
+weights = propertyDic.values()
+points = buildCountyPoints('counties.txt', weights)
+graphPredictionErr(points, 2)
+
 def findBest():
     kvals = [25, 50, 75, 100, 125, 150]
     weightsSet = []
-    for i in range(10):
+    for i in range(100):
         weights = pylab.array([random.choice([0, 1]) for i in range(14)])
         weights[2] = 0
         weightsSet.append(weights)
@@ -478,4 +504,4 @@ def findBest():
     pylab.ylabel("poverty mean difference")
     pylab.show()
 
-findBest()
+# findBest()
