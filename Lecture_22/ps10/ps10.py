@@ -390,15 +390,16 @@ def analyzeCluster(clusterset):
 # --------------------------------------------------------
 #                          Problem 3
 # --------------------------------------------------------
+
 def record(func):
     @wraps(func)
     def wraper(*args, **kwargs):
         # Write weight and associated max difference
         averageDiff = func(*args, **kwargs)
         file = open('clusteringLog.txt', 'a+')
-        file.write(str(propertyDic) + "\r\n")
         file.write(str(weights) + "\r\n")
         file.write(str(averageDiff) + "\r\n-------------------------------------------\r\n")
+        file.close()
         return averageDiff
 
     return wraper
@@ -452,25 +453,25 @@ def graphPredictionErr(points, dimension, kvals=[25, 50, 75, 100, 125, 150], cut
 
         averageDiff.append(sum([sd for sd in squaredDiff]) / len(squaredDiff))
 
-    # pylab.figure(1)
-    # pylab.plot(kvals, averageDiff, '-g', label="poverty mean difference")
-    # pylab.xlabel("K (Number of clusters)")
-    # pylab.ylabel("poverty mean difference")
-    # pylab.show()
+    pylab.figure(1)
+    pylab.plot(kvals, averageDiff, '-g', label="poverty mean difference")
+    pylab.xlabel("K (Number of clusters)")
+    pylab.ylabel("poverty mean difference")
+    pylab.show()
 
     return averageDiff
 
 propertyDic = {
-    "HomeValue2000": 1,
+    "HomeValue2000": 0,
     "Income1999": 0,
     "Poverty1999": 0,
     "PopDensity2000": 1,
-    "PopChange": 1,
+    "PopChange": 0,
     "Prcnt65+": 0,
     "Below18": 1,
-    "PrcntFemale2000": 1,
+    "PrcntFemale2000": 0,
     "PrcntHSgrads2000": 0,
-    "PrcntCollege2000": 1,
+    "PrcntCollege2000": 0,
     "Unemployed": 1,
     "PrcntBelow18": 0,
     "LifeExpectancy": 0,
@@ -493,8 +494,10 @@ weights = [
     propertyDic["LifeExpectancy"],
     propertyDic["FarmAcres"]
 ]
+
 points = buildCountyPoints('counties.txt', weights)
 graphPredictionErr(points, 2)
+
 
 def findBest():
     kvals = [25, 50, 75, 100, 125, 150]
